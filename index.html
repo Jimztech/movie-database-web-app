@@ -86,26 +86,37 @@ document.addEventListener('DOMContentLoaded', function() {
         </header>
 
         <section class="py-[12rem] px-[1rem] md:px-[2rem]">
-            <p>Trending</p>
-            <!-- trending div -->
-            <section id="trending" class="">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </section>
+            <div>
+                <p>Trending</p>
+                <!-- trending div -->
+                <section id="trending" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4">
+                    <!-- Movie cards inserted here. -->
+                </section>
+            </div>
 
-            <p>Popular</p>
-            <!-- popular div -->
-            <div id="popular"></div>
+            <div>
+                <p>Popular</p>
+                <!-- popular div -->
+                <section id="popular"></section>
 
-            <p>Documentary</p>
-            <!-- documentary div -->
-            <div id="documentary"></div>
+                <p class="text-right" data-list="2">See more...</p>
+            </div>
 
-            <p>Series</p>
-            <!-- series -->
-            <div id="series"></div>
+            <div>
+                <p>Documentary</p>
+                <!-- documentary div -->
+                <section id="documentary"></section>
+
+                <p class="text-right" data-list="3">See more</p>
+            </div>
+
+            <div>
+                <p>Series</p>
+                <!-- series -->
+                <section id="series"></section>
+
+                <p class="text-right" data-list="4">See more</p>
+            </div>
         </section>
 
     </section>
