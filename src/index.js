@@ -63,7 +63,7 @@ function createMovieCard(movie, index) {
 
     // Create overlay with movie title
     const overlayDiv = document.createElement("div");
-    overlayDiv.className = "bg-black/70 w-[130px] h-[74px] self-end rounded-xl my-4 text-black dark:text-white";
+    overlayDiv.className = "bg-black/70 w-[130px] h-[74px] self-end rounded-xl my-4 text-rose-500 dark:text-white";
 
     // Creating the p-tag for the overlay element
     const titleP = document.createElement("p");
