@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </section>
             </div>
 
-            <div class="my-[1rem]">                
+            <div class="my-[1rem]" id="search-bar">                
                 <form class="max-w-md mx-auto">   
                     <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                     <div class="relative">
@@ -141,6 +141,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
             <!-- Series -->
             <div></div>
+
+            <!-- Search display results page -->
+            <div></div>
+        </section>
+
+        <section id="details-page" class="hidden">
+            <video class="w-full" controls>
+                <source src="/docs/videos/flowbite.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+
+            <div>
+                <section id="details">
+                    <p id="movie-name"></p>
+                    <p id="movie-details"></p>
+                </section>
+
+                <section id="cast"></section>
+            </div>
+
         </section>
 
     </section>
