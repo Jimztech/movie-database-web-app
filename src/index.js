@@ -157,18 +157,13 @@ async function fetchDocumentaries() {
 async function fetchTvSeries() {
     try {
         // ✅ Correct - added & before api_key
-        const response = await fetch(`${BASE_URL}/tv/series_id/season/season_number/videos?language=en-US&api_key=${API_KEY}`);
-        console.log('Fetching from:', url); // Debug log
-
-        console.log('Response status:', response.status); // Debug log
-        console.log('Response headers:', response.headers); // Debug log
+        const response = await fetch(`${BASE_URL}/movie/upcoming?api_key=${API_KEY}`);
 
         if(!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('Data received:', data); // Debug log
         return data.results;
 
     } catch (error) {
@@ -352,6 +347,7 @@ function handleResize() {
             if (currentMovieCount != newMovieCount) {
                 renderTrendingMovies();
                 renderPopularMovies();
+                renderTvSeries();
             }
         }, 250)
     });
