@@ -58,7 +58,7 @@ function createMovieCard(movie, index) {
         : 'https://via.placeholder.com/220x221?text=No+Image';
 
     movieDiv.style.backgroundImage = `url(${posterUrl})`;
-    movieDiv.style.backgroundSize = "cover";
+    movieDiv.style.backgroundSize = "contain";
     movieDiv.style.backgroundPosition = "center";
 
     // Create overlay with movie title
@@ -83,12 +83,15 @@ function createMovieCard(movie, index) {
 
 // The function to get the number of movies to show based on screen size
 function getMovieCount() {
-    if(window.innerWidth >= 768){
+     if(window.innerWidth >= 768 && window.innerWidth < 1024) {
+        return 9;
+    } else if(window.innerWidth >= 1024) {
         return 8;
     } else {
         return 4;
     }
 }
+
 
 
 // code for returning movie name as 7 words.
@@ -107,7 +110,7 @@ async function fetchTrendingMovies() {
     try {
         const response = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
         if(!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -117,6 +120,63 @@ async function fetchTrendingMovies() {
         return [];
     }
 }
+
+// Function to fetch Popular movies
+async function fetchPopularMovies() {
+    try {
+        const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching popular movies: ", error);
+        return [];
+    }
+}
+
+// Function to fetch Documentaries
+async function fetchDocumentaries() {
+    try {
+        const response = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=99`);
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.results;
+    } catch (error) {
+        console.error("Error fetching documentaries: ", error);
+        return[];
+    }
+}
+
+// Function to fetch Tv Series
+async function fetchTvSeries() {
+    try {
+        // ✅ Correct - added & before api_key
+        const response = await fetch(`${BASE_URL}/tv/series_id/season/season_number/videos?language=en-US&api_key=${API_KEY}`);
+        console.log('Fetching from:', url); // Debug log
+
+        console.log('Response status:', response.status); // Debug log
+        console.log('Response headers:', response.headers); // Debug log
+
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Data received:', data); // Debug log
+        return data.results;
+
+    } catch (error) {
+        console.error("Error fetching tv series: ", error);
+        return[];
+    }
+}
+
 
 
 // Function to render Trending movies
@@ -160,6 +220,124 @@ async function renderTrendingMovies() {
     }
 }
 
+// Function to render Popular movies
+async function renderPopularMovies() {
+    const popularSection = document.getElementById("popular");
+
+    if(!popularSection) {
+        console.error("Popular section not found");
+        return;
+    }
+
+    popularSection.innerHTML = '<div class="col-span-full text-center p-4">Loading popular movies...</div>';
+
+    try {
+        // Fetch movies
+        const movies = await fetchPopularMovies();
+
+        if (movies.length === 0) {
+            popularSection.innerHTML = '<div class="col-span-full text-center p-4">No movies found</div>';
+            return;
+        }
+
+        // Clear Loading States
+        popularSection.innerHTML = "";
+
+        // get the number of movies to show
+        const movieCount = getMovieCount();
+        const moviesToShow = movies.slice(0, movieCount);
+
+        // Create and append movie cards
+        moviesToShow.forEach((movie, index) => {
+            const movieCard = createMovieCard(movie, index);
+            popularSection.appendChild(movieCard);
+        });
+
+        console.log(`Rendered ${moviesToShow.length} popular movies`);
+
+    } catch (error) {
+        console.error('Error rendering movies:', error);
+        popularSection.innerHTML = '<div class="col-span-full text-center p-4 text-red-500">Error loading movies</div>';
+    }
+}
+
+async function renderDocumentaries() {
+    const documentarySection = document.getElementById("documentary");
+
+    if(!documentarySection) {
+        console.error("documentary section not found");  
+        return;
+    }
+
+    documentarySection.innerHTML = '<div class="col-span-full text-center p-4">Loading documentary movies...</div>';
+
+    try {
+        const movies = await fetchDocumentaries();
+
+        if(movies.length === 0) {
+            documentarySection.innerHTML = '<div class="col-span-full text-center p-4">No movies found</div>';
+            return;
+        }
+        
+        // Clear Loading States
+        documentarySection.innerHTML = "";
+
+        // get the number of movies to show
+        const movieCount = getMovieCount();
+        const moviesToShow = movies.slice(0, movieCount);
+
+        // Create and append movie cards
+        moviesToShow.forEach((movie, index) => {
+            const movieCard = createMovieCard(movie, index);
+            documentarySection.appendChild(movieCard);
+        });
+
+        console.log(`Rendered ${moviesToShow.length} documentaries`);
+
+    } catch (error) {
+        console.error('Error rendering movies:', error);
+        documentarySection.innerHTML = '<div class="col-span-full text-center p-4 text-red-500">Error loading movies</div>';
+    }
+}
+
+// Function to render tv series 
+async function renderTvSeries() {
+    const seriesSection = document.getElementById("series");
+
+    if(!seriesSection) {
+        console.error("TvSeries section not found");
+        return;
+    }
+
+    seriesSection.innerHTML = '<div class="col-span-full text-center p-4">Loading Series ...</div>';
+
+    try {
+        const movies = await fetchTvSeries();
+
+        if(movies.length === 0) {
+            seriesSection.innerHTML = '<div class="col-span-full text-center p-4">No movies found</div>';
+            return;
+        }
+
+        // Clear Loading States
+        seriesSection.innerHTML = "";
+
+        // get the number of movies to show
+        const movieCount = getMovieCount();
+        const moviesToShow = movies.slice(0, movieCount);
+
+        // Create and append movie cards
+        moviesToShow.forEach((movie, index) => {
+            const movieCard = createMovieCard(movie, index);
+            seriesSection.appendChild(movieCard);
+        });
+
+        console.log(`Rendered ${moviesToShow.length} series`);        
+    } catch (error) {
+        console.error('Error rendering movies:', error);
+        seriesSection.innerHTML = '<div class="col-span-full text-center p-4 text-red-500">Error loading movies</div>';
+    }
+}
 
 // Function to handle responsive sizes
 function handleResize() {
@@ -173,6 +351,7 @@ function handleResize() {
             // Only re-render if movie count should change
             if (currentMovieCount != newMovieCount) {
                 renderTrendingMovies();
+                renderPopularMovies();
             }
         }, 250)
     });
@@ -182,6 +361,9 @@ function handleResize() {
 // Initialize everything when dom is loaded
 document.addEventListener('DOMContentLoaded', function() {
     renderTrendingMovies();
+    renderPopularMovies();
+    renderDocumentaries();
+    renderTvSeries();
     handleSeeMore();
     handleResize();
 });

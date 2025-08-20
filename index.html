@@ -85,38 +85,62 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </header>
 
+
         <section class="py-[12rem] px-[1rem] md:px-[2rem]">
-            <div>
-                <p>Trending</p>
+            <div class="">
+                <p class="text-2xl md:text-4xl my-[1rem]">Trending</p>
                 <!-- trending div -->
-                <section id="trending" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4">
+                <section id="trending" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-8 md:gap-x-0 lg:grid-cols-4">
                     <!-- Movie cards inserted here. -->
                 </section>
+
+                <p class="text-right my-[0.5rem]" data-list="1">See more...</p>
+            </div>
+
+             <div>
+                <p class="text-2xl md:text-4xl my-[1rem]">Popular movies</p>
+                <!-- Adult div -->
+                <section id="popular" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4">
+                    <!-- Movie cards inserted here. -->
+                </section>
+
+                <p class="text-right my-[0.5rem]" data-list="2">See more</p>
             </div>
 
             <div>
-                <p>Popular</p>
-                <!-- popular div -->
-                <section id="popular"></section>
-
-                <p class="text-right" data-list="2">See more...</p>
-            </div>
-
-            <div>
-                <p>Documentary</p>
+                <p class="text-2xl md:text-4xl my-[1rem]">Documentary</p>
                 <!-- documentary div -->
-                <section id="documentary"></section>
+                <section id="documentary" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4">
+                    <!-- Movie cards inserted here. -->
+                </section>
 
-                <p class="text-right" data-list="3">See more</p>
+                <p class="text-right my-[0.5rem]" data-list="3">See more</p>
             </div>
 
             <div>
-                <p>Series</p>
+                <p class="text-2xl md:text-4xl my-[1rem]">Tv Series</p>
                 <!-- series -->
-                <section id="series"></section>
+                <section id="series" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4">
+                    <!-- Movie cards inserted here. -->
+                </section>
 
-                <p class="text-right" data-list="4">See more</p>
+                <p class="text-right my-[0.5rem]" data-list="4">See more</p>
             </div>
+        </section>
+
+        <!-- Trending, popular, documentary, series pages -->
+        <section class="hidden">
+            <!-- Trending -->
+            <div></div>
+
+            <!-- Popular -->
+            <div></div>
+
+            <!-- Documentary -->
+            <div></div>
+
+            <!-- Series -->
+            <div></div>
         </section>
 
     </section>
