@@ -23,7 +23,7 @@
     </section>
 
     <section>
-        <header class="px-[1rem] py-[1rem] md:px-[2rem] md:py-[2rem] fixed top-0 left-0 w-full">
+        <header class="px-[1rem] py-[1rem] md:px-[2rem] md:py-[2rem] fixed top-0 left-0 w-full" id="header">
             <div class="flex justify-between">
                 <p class="font-bold text-4xl md:text-6xl text-rose-600">Moviez</p>
             
@@ -65,7 +65,7 @@
         </header>
 
 
-        <section class="py-[12rem] px-[1rem] md:px-[2rem]">
+        <section class="py-[12rem] px-[1rem] md:px-[2rem]" id="main">
             <div class="">
                 <p class="text-2xl md:text-4xl my-[1rem]">Trending</p>
                 <!-- trending div -->
@@ -99,7 +99,7 @@
             <div>
                 <p class="text-2xl md:text-4xl my-[1rem]">Upcoming Movies</p>
                 <!-- series -->
-                <section id="series" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4">
+                <section id="series" class="grid gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4 cursor-pointer">
                     <!-- Movie cards inserted here. -->
                 </section>
 
@@ -125,7 +125,8 @@
             <div></div>
         </section>
 
-        <section id="details-page" class="hidden">
+        <section id="details-page" class="hidden text-rose-500 dark:text-white">
+            <!-- Probably yt video or any source, but must be played here -->
             <video class="w-full" controls>
                 <source src="/docs/videos/flowbite.mp4" type="video/mp4">
                 Your browser does not support the video tag.
@@ -133,8 +134,20 @@
 
             <div>
                 <section id="details">
-                    <p id="movie-name"></p>
-                    <p id="movie-details"></p>
+                    <!-- This movie name should have the data-movie-title from the index.js file-->
+                    <section class="flex items-center justify-between px-[1rem] py-[1rem]">
+                        <p id="movie-name" class="text-4xl"></p>
+                        
+                        <!-- watchlist -->
+                        <div>
+                            <svg class="w-12 h-12 text-yellow-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"/>
+                            </svg>
+                        </div>
+                    </section>
+
+                    <!-- this would give u info about what the movie is all about and it should not be more than 300 words, if more than 300 words add ...-->
+                    <p id="movie-details" class="px-[1rem] py-[1.5rem]"></p>
                 </section>
 
                 <section id="cast"></section>

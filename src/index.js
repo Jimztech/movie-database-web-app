@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function(){
 // Function to create movie card
 function createMovieCard(movie, index) {
     const movieDiv = document.createElement("div");
-    movieDiv.className = "w-[160px] lg:w-[220px] h-[221px] rounded-2xl flex flex-row justify-center";
+    movieDiv.className = "w-[160px] lg:w-[220px] h-[221px] rounded-2xl flex flex-row justify-center cursor-pointer";
 
     // Create movie poster background
     const posterUrl = movie.poster_path 
@@ -73,10 +73,17 @@ function createMovieCard(movie, index) {
     titleP.setAttribute("data-movie-index", index);
 
     // Limit title to prevent overflow
-    titleP.textContent = limitWords(movie.title || movie.original_title, 7);
+    const movieTitle = movie.title || movie.original_title;
+    titleP.textContent = limitWords(movieTitle, 7);
 
     overlayDiv.appendChild(titleP);
     movieDiv.appendChild(overlayDiv);
+
+    // Add click event to show movie details
+    movieDiv.addEventListener('click', function() {
+        const movieId = movie.id;
+        showMovieDetails(movieId, movieTitle);
+    });
 
     return movieDiv;
 }
@@ -95,13 +102,71 @@ function getMovieCount() {
 
 
 // code for returning movie name as 7 words.
-function limitWords(text, wordLimit = 7) {
+function limitWords(text, wordLimit) {
     const words = text.split(" ");
     if(words.length <= wordLimit) {
         return text;
     } else {
         return words.slice(0, wordLimit).join(" ") + "...";
     }
+}
+
+
+// Function to get youtube trailer
+function getYouTubeTrailer(videos) {
+    if(!videos || !videos.results) {
+        return null;
+    }
+
+    // search for official trailer first
+    const trailer = videos.results.find(video =>
+        video.site === 'YouTube' &&
+        (video.type === 'Trailer' || video.type === 'Teaser') &&
+        video.official === true
+    );
+
+    // If no official trailer get any yt video
+    if(!trailer) {
+        const anyYouTubeVideo = videos.results.find(video => 
+            video.site === 'Youtube'
+        );
+        return anyYouTubeVideo;
+    }
+
+    return trailer;
+}
+
+// Function to create cast member element
+function createCastMember(castMember) {
+    const castDiv = document.createElement("div");
+    castDiv.className = 'flex flex-col items-center text-center min-w-[100px]';
+
+    // Cast member photo
+    const img = document.createElement("img");
+    img.className = 'w-16 h-16 rounded-full object-cover mb-2';
+    img.src = castMember.profile_path 
+        ? `${IMAGE_BASE_URL}${castMember.profile_path}`
+        : 'https://via.placeholder.com/64x64?text=No+Photo';
+    img.alt = castMember.name;
+    img.onerror = function () {
+        this.src = 'https://via.placeholder.com/64x64?text=No+Photo';
+    };
+
+    // Cast member name
+    const nameP = document.createElement("p");
+    nameP.className = 'text-sm font-medium';
+    nameP.textContent = castMember.name;
+
+    // Character name
+    const characterP = document.createElement("p");
+    characterP.className = 'text-xs text-gray-600 dark:text-gray-400';
+    characterP.textContent = castMember.character;
+
+    castDiv.appendChild(img);
+    castDiv.appendChild(nameP);
+    castDiv.appendChild(characterP);
+
+    return castDiv;
 }
 
 
@@ -172,6 +237,22 @@ async function fetchTvSeries() {
     }
 }
 
+// Function to fetch movie details
+async function fetchMovieDetails(movieId) {
+    try {
+        const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&append_to_response=videos,credits`);
+
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const movieData = await response.json();
+        return movieData;
+    } catch (error) {
+        console.error("Error fetching movie details:", error);
+        return null;
+    }
+}
 
 
 // Function to render Trending movies
@@ -334,6 +415,125 @@ async function renderTvSeries() {
     }
 }
 
+
+// function to show movie details page
+async function showMovieDetails(movieId, movieTitle) {
+    const detailsPage = document.getElementById("details-page");
+    const movieNameEl = document.getElementById("movie-name");
+    const movieDetailsEl = document.getElementById("movie-details");
+    const castSection = document.getElementById("cast");
+    const videoElement = document.querySelector("#details-page video");
+    const mainSection = document.getElementById("main");
+    const header = document.getElementById("header");
+
+    if(!detailsPage) {
+        console.error('Details page element not found');
+        return;
+    }
+
+    // Show details page, hide main content and search bar.
+    detailsPage.classList.remove("hidden");
+    mainSection.classList.add("hidden");
+    header.classList.add("hidden");
+
+    // Show loading state
+    movieNameEl.textContent = movieTitle || "Loading...";
+    movieDetailsEl.textContent = "Loading movie details";
+    castSection.innerHTML = '<p class="text-center p-4">Loading cast...</p>';
+
+    try {
+        // Fetch movie details
+        const movieData = await fetchMovieDetails(movieId);
+
+        if(!movieData) {
+            movieDetailsEl.textContent = "Error Loading Movie details...";
+            return;
+        }
+
+        // Update movie name
+        movieNameEl.textContent = movieData.title || movieData.original_title;
+
+        // Update movie details (limit ~300 words)
+        const overview = movieData.overview || "No description available.";
+        movieDetailsEl.textContent = limitWords(overview, 50);
+
+        // Handle movie trailer
+        const trailer = getYouTubeTrailer(movieData.videos);
+
+        if(trailer) {
+            // Replace video element with Youtube iframe
+            const iframe = document.createElement('iframe');
+            iframe.className = "w-full h-64 md:h-80 lg:h-96";
+            iframe.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=0&controls=1`;
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('frameborder', '0');
+            iframe.title = `${movieData.title} Trailer`;
+
+            // Replace video element with iframe
+            videoElement.parentNode.replaceChild(iframe, videoElement)
+        } else {
+            // Hide video section if no trailer available
+            videoElement.style.display = "none";
+
+            // Show placeholder
+            const placeholder = document.createElement('div');
+            placeholder.className = 'w-full h-64 bg-gray-200 dark:bg-gray-800 flex items-center justify-center rounded-lg mb-4';
+            placeholder.innerHTML = '<p class="text-gray-500">No trailer available</p>';
+            videoElement.parentNode.insertBefore(placeholder, videoElement);
+        }
+
+        // Update cast
+        if(movieData.credits && movieData.credits.cast) {
+            const cast = movieData.credits.cast.slice(0, 10);
+            castSection.innerHTML = "";
+
+            // Create cast container
+            const castContainer = document.createElement("div");
+            castContainer.className = "";
+
+            const castTitle = document.createElement("h3");
+            castTitle.className = 'text-2xl px-[1rem] font-bold mb-4';
+            castTitle.textContent = "Cast";
+
+            const castGrid = document.createElement("div");
+            castGrid.className = 'grid grid-cols-3 md:grid-cols-5 gap-4 pb-4';
+
+            cast.forEach(castMember => {
+                const castElement = createCastMember(castMember);
+                castGrid.appendChild(castElement);
+            });
+
+            castContainer.appendChild(castTitle);
+            castContainer.appendChild(castGrid);
+            castSection.appendChild(castContainer);
+        } else {
+            castSection.innerHTML = '<p class="text-center p-4 text-gray-500">No cast information available</p>';
+        }
+
+    } catch (error) {
+        console.error("Error displaying movie details: ", error);
+        movieDetailsEl.textContent = "Error loading movie details.";
+        castSection.innerHTML = '<p class="text-center p-4 text-red-500">Error loading cast information</p>';
+    }
+} 
+
+
+// Function to hide movie details page
+function hideMovieDetails() {
+    const detailsPage = document.getElementById("details-page");
+    const mainContent = document.getElementById("main");
+    const header = document.getElementById("header");
+
+    if(detailsPage) {
+        detailsPage.classList.add("hidden");
+    }
+
+    if(mainContent) {
+        mainContent.classList.remove("hidden");
+        header.classList.remove("hidden");
+    }
+}
+
 // Function to handle responsive sizes
 function handleResize() {
     let resizeTimer;
@@ -354,12 +554,29 @@ function handleResize() {
 }
 
 
+// function to add back button to details page
+function addBackButton() {
+    const detailsPage = document.getElementById("details-page");
+
+    if(detailsPage && !detailsPage.querySelector('.back-button')) {
+        const backButton = document.createElement('button');
+        backButton.className = 'back-button bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4 mt-2 mx-2 transition-colors duration-300';
+        backButton.textContent = '← Back to Movies';
+        
+        backButton.addEventListener('click', hideMovieDetails);
+        
+        // Insert back button at the beginning of details page
+        detailsPage.insertBefore(backButton, detailsPage.firstChild);
+    }
+}
+
+
 // Initialize everything when dom is loaded
 document.addEventListener('DOMContentLoaded', function() {
     renderTrendingMovies();
     renderPopularMovies();
     renderDocumentaries();
     renderTvSeries();
-    handleSeeMore();
     handleResize();
+    addBackButton();
 });
