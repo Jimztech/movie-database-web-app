@@ -563,7 +563,9 @@ function addBackButton() {
         backButton.className = 'back-button bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4 mt-2 mx-2 transition-colors duration-300';
         backButton.textContent = '← Back to Movies';
         
-        backButton.addEventListener('click', hideMovieDetails);
+        backButton.addEventListener('click', function() {
+            window.location.reload();
+        });
         
         // Insert back button at the beginning of details page
         detailsPage.insertBefore(backButton, detailsPage.firstChild);
