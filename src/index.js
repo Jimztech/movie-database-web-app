@@ -425,6 +425,7 @@ async function showMovieDetails(movieId, movieTitle) {
     const videoElement = document.querySelector("#details-page video");
     const mainSection = document.getElementById("main");
     const header = document.getElementById("header");
+    const searchPage = document.getElementById("search-results");
 
     if(!detailsPage) {
         console.error('Details page element not found');
@@ -435,6 +436,7 @@ async function showMovieDetails(movieId, movieTitle) {
     detailsPage.classList.remove("hidden");
     mainSection.classList.add("hidden");
     header.classList.add("hidden");
+    searchPage.classList.add("hidden");
 
     // Show loading state
     movieNameEl.textContent = movieTitle || "Loading...";
@@ -518,22 +520,6 @@ async function showMovieDetails(movieId, movieTitle) {
 } 
 
 
-// Function to hide movie details page
-function hideMovieDetails() {
-    const detailsPage = document.getElementById("details-page");
-    const mainContent = document.getElementById("main");
-    const header = document.getElementById("header");
-
-    if(detailsPage) {
-        detailsPage.classList.add("hidden");
-    }
-
-    if(mainContent) {
-        mainContent.classList.remove("hidden");
-        header.classList.remove("hidden");
-    }
-}
-
 // Function to handle responsive sizes
 function handleResize() {
     let resizeTimer;
@@ -573,6 +559,191 @@ function addBackButton() {
 }
 
 
+// Search results page
+const searchPage = document.getElementById("search-results");
+searchPage.classList.add("hidden");
+
+// Implementing the search functionality
+async function searchMovies(query) {
+    try {
+        const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=1`);
+
+        if(!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // limiting movies result to 20 movies only
+        return data.results.slice(0, 20);
+    } catch (error) {
+        console.error('Error searching movies:', error);
+        return [];
+    }
+}
+
+
+// Display search results
+function displaySearchResults(movies, query) {
+    const searchResultsGrid = document.querySelector('#search-results .grid');
+    const searchResultsSection = document.getElementById("search-results");
+    const searchResultsText = document.querySelector("#search-results p");
+
+    // clear previous results
+    searchResultsGrid.innerHTML = "";
+
+    // Update the search results text
+    searchResultsText.textContent = `Search Results for "${query}" (${movies.length} results)`;
+
+    if(movies.length === 0) {
+        searchResultsGrid.innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <p class="text-gray-500 dark:text-gray-400 text-lg">No movies found for "${query}"</p>
+                <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Try searching with different keywords</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Display movie cards
+    movies.forEach((movie, index) => {
+        const movieCard = createMovieCard(movie, index);
+        searchResultsGrid.appendChild(movieCard);
+    });
+
+    // show search results section
+    searchResultsSection.classList.remove("hidden");
+}
+
+// Handle search form submission
+function handleSearch(event) {
+    event.preventDefault();
+
+    const searchInput = document.getElementById("default-search");
+    const query = searchInput.value.trim();
+
+    if(query === "") {
+        alert("Please enter a search term");
+        return;
+    }
+
+    // Hide other sections and show loading states
+    hideOtherSections();
+    showLoadingState();
+
+    // Perform search
+    searchMovies(query)
+        .then(movies => {
+            hideLoadingState();
+            displaySearchResults(movies, query);
+        })
+        .catch(error => {
+            hideLoadingState();
+            console.error('Search failed:', error);
+            showErrorState(query);
+        });
+}
+
+
+// Hide other sections when showing search results
+function hideOtherSections() {
+    const mainSection = document.getElementById("main");
+    const trendingSection = document.getElementById("trending-page");
+    const popularSection = document.getElementById("popular-page");
+    const documentarySection = document.getElementById("documentary-page");
+    const serieSection = document.getElementById("series-page");
+    const logo = document.getElementById("header-logo");
+    const headerItems = document.getElementById("header-toggle");
+    const header = document.getElementById("header");
+
+    const sectionsToHide = [
+        mainSection,
+        trendingSection,
+        popularSection,
+        documentarySection,
+        serieSection,
+        header
+    ]
+
+    sectionsToHide.forEach(element => {
+        if(element) {
+            element.classList.add("hidden");
+        }
+    });
+}
+
+// Show loading state
+function showLoadingState() {
+    const searchResultsGrid = document.querySelector('#search-results .grid');
+    const searchResultsSection = document.getElementById("search-results");
+    const searchResultsText = document.querySelector("#search-results p");
+
+    searchResultsText.textContent = 'Searching...';
+    searchResultsGrid.innerHTML = `
+        <div class="col-span-full text-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p class="text-gray-500 dark:text-gray-400 mt-4">Searching for movies...</p>
+        </div>
+    `;
+
+    searchResultsSection.classList.remove("hidden");
+}
+
+// Hide loading state
+function hideLoadingState() {
+    // Loading state will be replaced by search results or error state
+}
+
+
+// Show error state
+function showErrorState(query) {
+    const searchResultsGrid = document.querySelector('#search-results .grid');
+    const searchResultsText = document.querySelector('#search-results p');
+
+    searchResultsText.textContent = `Search Error`;
+    searchResultsGrid.innerHTML = `
+        <div class="col-span-full text-center py-8">
+            <p class="text-red-500 text-lg">Failed to search for "${query}"</p>
+            <p class="text-gray-400 dark:text-gray-500 text-sm mt-2">Please check your internet connection and try again</p>
+        </div>
+    `;
+}
+
+// Handle back button from search results
+function handleBackFromSearch() {
+    const searchResultsSection = document.getElementById('search-results');
+    const searchInput = document.getElementById('default-search');
+    const mainSection = document.getElementById("main");
+
+    // Hide search results
+    searchResultsSection.classList.add('hidden');
+    
+    // Clear search input
+    searchInput.value = '';
+
+    // mainSection.classList.remove("hidden");
+    window.location.reload();
+}
+
+// function to show other sections
+function showOtherSections() {
+    const sectionsToShow = [
+        mainSection,
+        trendingSection,
+        popularSection,
+        documentarySection,
+        serieSection
+    ];
+
+    sectionsToShow.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.classList.remove('hidden');
+        }
+    });
+}
+
+
 // Initialize everything when dom is loaded
 document.addEventListener('DOMContentLoaded', function() {
     renderTrendingMovies();
@@ -581,4 +752,16 @@ document.addEventListener('DOMContentLoaded', function() {
     renderTvSeries();
     handleResize();
     addBackButton();
+
+    // Add event listener to search form
+    const searchForm = document.querySelector('#search-bar form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', handleSearch);
+    }
+    
+    // Add event listener to back button in search results
+    const backButton = document.getElementById('search-back-button');
+    if (backButton) {
+        backButton.addEventListener('click', handleBackFromSearch);
+    }
 });

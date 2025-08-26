@@ -25,9 +25,9 @@
     <section>
         <header class="px-[1rem] py-[1rem] md:px-[2rem] md:py-[2rem] fixed top-0 left-0 w-full" id="header">
             <div class="flex justify-between">
-                <p class="font-bold text-4xl md:text-6xl text-rose-600">Moviez</p>
+                <p class="font-bold text-4xl md:text-6xl text-rose-600" id="header-logo">Moviez</p>
             
-                <section class="flex justify-center items-center gap-[1rem]">
+                <section class="flex justify-center items-center gap-[1rem]" id="header-toggle">
                     <!-- watchlist -->
                     <div>
                         <svg class="w-12 h-12 text-yellow-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@
                     <!-- Movie cards inserted here. -->
                 </section>
 
-                <p class="text-right my-[0.5rem]" data-list="1">See more...</p>
+                <p class="text-right my-[0.5rem]" data-list="1">See more</p>
             </div>
 
              <div>
@@ -108,21 +108,34 @@
         </section>
 
         <!-- Trending, popular, documentary, series pages -->
-        <section class="hidden">
-            <!-- Trending -->
-            <div></div>
+        <section>
+            <!-- Trending page -->
+            <div class="hidden" id="trending-page"></div>
 
-            <!-- Popular -->
-            <div></div>
+            <!-- Popular page -->
+            <div class="hidden" id="popular-page"></div>
 
-            <!-- Documentary -->
-            <div></div>
+            <!-- Documentary page  -->
+            <div class="hidden" id="documentary-page"></div>
 
-            <!-- Series -->
-            <div></div>
+            <!-- Series page -->
+            <div class="hidden" id="series-page"></div>
 
-            <!-- Search display results page -->
-            <div></div>
+            <!-- Search display results of search page -->
+            <section id="search-results">
+                <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mb-4 mt-2 mx-2 transition-colors duration-300" id="search-back-button">
+                    ← Back to Movies
+                </button>
+                <p class="px-3"></p>
+                <div class="grid px-3 py-3 gap-8 grid-cols-2 md:grid-cols-3 md:gap-y-4 md:gap-x-0 lg:grid-cols-4 cursor-pointer" id="">
+                    <!-- where the searched items would be displayed using the movieCard display -->
+                </div>
+            </section>
+
+            <!-- Watchlist page -->
+            <div class="hidden" id="watchlist-page">
+                <p>Watchlist</p>
+            </div>
         </section>
 
         <section id="details-page" class="hidden text-rose-500 dark:text-white">
