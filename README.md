@@ -133,11 +133,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Flowbite](https://flowbite.com/) for the component library
 - [Figma Community](https://www.figma.com/community) for design inspiration
 
-## 📧 Contact
-
-Your Name - [@yourusername](https://twitter.com/yourusername) - your.email@example.com
-
-Project Link: [https://github.com/yourusername/movie-web-app](https://github.com/yourusername/movie-web-app)
 
 ---
 
